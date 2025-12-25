@@ -1,6 +1,11 @@
+#[no_std]
 
 
-use bevy::{camera::Viewport, prelude::*, window::WindowResized};
+use bevy_app::*;
+use bevy_camera::*;
+use bevy_ecs::prelude::*;
+use bevy_math::*;
+use bevy_window::*;
 
 pub enum AspectRatioMode {
     Keep,
@@ -92,7 +97,7 @@ impl ViewportPlugin{
                 camera.viewport = Some(Viewport{
                     physical_position : viewport_position,
                     physical_size : viewport_size,
-                    ..default()
+                    ..Default::default()
                 });
             }
         }

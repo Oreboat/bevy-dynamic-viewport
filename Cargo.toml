@@ -1,9 +1,15 @@
+
+
 [package]
 name = "bevy-dynamic-viewport"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 description = "a simple dynamic viewport system for bevy engine"
 license = "Apache-2.0"
 
 [dependencies]
-bevy = "0.17.3"
+bevy_app = "0.17.3"
+bevy_camera = "0.17.3"
+bevy_ecs = "0.17.3"
+bevy_math = "0.17.3"
+bevy_window = "0.17.3"
