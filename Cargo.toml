@@ -2,7 +2,7 @@
 
 [package]
 name = "bevy-dynamic-viewport"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2024"
 description = "a simple dynamic viewport system for bevy engine"
 license = "Apache-2.0"
