@@ -3,9 +3,9 @@
 
 use bevy_app::*;
 use bevy_camera::*;
-use bevy_ecs::prelude::*;
+use bevy_ecs::{prelude::*, reflect};
 use bevy_math::*;
-use bevy_reflect::Reflect;
+use bevy_reflect::prelude::*;
 use bevy_window::*;
 
 #[derive(Reflect)]
@@ -18,7 +18,7 @@ pub enum AspectRatioMode {
 
 
 
-#[derive(Bundle)]
+#[derive(Bundle, Reflect)]
 pub struct ViewportBundle{
     pub camera: Camera,
     pub scaleable_viewport: ScaleableViewport,
@@ -26,6 +26,7 @@ pub struct ViewportBundle{
 
 #[derive(Component, Reflect)]
 #[require(Camera)]
+#[reflect(Component)]
 pub struct ScaleableViewport{
     pub aspect_ratio_mode: AspectRatioMode,
     pub aspect_ratio: UVec2,
