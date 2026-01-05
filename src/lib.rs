@@ -3,7 +3,7 @@
 
 use bevy_app::*;
 use bevy_camera::*;
-use bevy_ecs::{prelude::*, reflect};
+use bevy_ecs::prelude::*;
 use bevy_math::*;
 use bevy_reflect::prelude::*;
 use bevy_window::*;
@@ -79,7 +79,22 @@ pub struct ViewportPlugin;
 
 impl ViewportPlugin{
 
-    fn resize_viewport(
+    fn on_viewport_added(
+        viewport_added: On<Add, ScaleableViewport>,
+        windows: Query<&Window>,
+        mut query: Query<(&mut Camera, &ScaleableViewport)>,
+        
+    ){
+        for window in windows{
+            let entity = viewport_added.entity;
+            let mut viewport = query.get_mut(entity).unwrap();
+            
+            ViewportPlugin::resize_viewport(&mut viewport.0, viewport.1, window);
+            
+        }
+    }
+
+    fn on_window_resized(
         windows: Query<&Window>,
         mut window_resized_reader: MessageReader<WindowResized>,
         mut query: Query<(&mut Camera, &ScaleableViewport)>
@@ -87,24 +102,26 @@ impl ViewportPlugin{
         for window_resized in window_resized_reader.read(){
             let window = windows.get(window_resized.window).unwrap();
 
-            let window_size = window.resolution.physical_size().as_vec2();
-
-            
-
             for (mut camera, viewport) in &mut query{
 
+                ViewportPlugin::resize_viewport(&mut camera, viewport, window);
 
-                let viewport_size = ViewportPlugin::get_new_resolution(window.resolution.physical_size(), viewport.aspect_ratio, &viewport.aspect_ratio_mode);
-                let viewport_position = ((window_size - viewport_size.as_vec2()) / 2.0).as_uvec2();
-
-                camera.viewport = Some(Viewport{
-                    physical_position : viewport_position,
-                    physical_size : viewport_size,
-                    ..Default::default()
-                });
             }
         }
     }
+
+    fn resize_viewport(camera: &mut Camera, viewport: &ScaleableViewport, window: &Window){
+            let viewport_size = ViewportPlugin::get_new_resolution(window.resolution.physical_size(), viewport.aspect_ratio, &viewport.aspect_ratio_mode);
+            let window_size = window.resolution.physical_size().as_vec2();
+            let viewport_position = ((window_size - viewport_size.as_vec2()) / 2.0).as_uvec2();
+
+            camera.viewport = Some(Viewport{
+                physical_position : viewport_position,
+                physical_size : viewport_size,
+                ..Default::default()
+            });
+    }
+    
     pub fn get_new_resolution(
         window: UVec2,
         aspect: UVec2,
@@ -153,7 +170,8 @@ impl ViewportPlugin{
 impl Plugin for ViewportPlugin{
     fn build(&self, app: &mut App) {
         app
-        .add_systems(Update, ViewportPlugin::resize_viewport)
+        .add_systems(Update, ViewportPlugin::on_window_resized)
+        .add_observer(ViewportPlugin::on_viewport_added)
         ;
     }
 }
